@@ -13,5 +13,3 @@ Allows you to have a virtual loyalty card on your smartphone that you can presen
 ## Technologies
 - Ionic + React + Tailwind
 - Firebase Auth + Firebase RTDB
-
-Enjoy 😎
