@@ -84,11 +84,19 @@ const App = () => {
 					return
 				}
 				const diff = Object.entries(pointsParsed).find(
-					([key, value]) => points !== undefined && points[key] !== value,
+					([key, value]) =>
+						points === undefined ||
+						(points !== undefined && points[key] !== value),
 				)
-				if (diff && providers && points) {
+				if (diff && providers) {
 					const [key, value] = diff
-					const pointDiff = value - points[key]
+					const pointDiff = (() => {
+						if (points === undefined) {
+							return value
+						} else {
+							return value - points[key]
+						}
+					})()
 					present({
 						header: `${providers[key].businessName}`,
 						message: `Vous avez ${
@@ -143,30 +151,55 @@ const App = () => {
 			<IonReactRouter>
 				<IonTabs>
 					<IonRouterOutlet>
-						<Route exact={true} path="/login">
-							{getComponentByAuthenticatedStatus(<Login />, false)}
-							<Login />
-						</Route>
-						<Route exact={true} path="/create-account">
-							{getComponentByAuthenticatedStatus(<CreateAccount />, false)}
-						</Route>
-						<Route exact={true} path="/forgot-password">
-							{getComponentByAuthenticatedStatus(<ForgotPassword />, false)}
-						</Route>
-						<Route exact={true} path="/home">
-							{getComponentByAuthenticatedStatus(<Home />, true)}
-						</Route>
-						<Route exact={true} path="/list">
-							{getComponentByAuthenticatedStatus(<List />, true)}
-						</Route>
-						<Route exact={true} path="/setting">
-							{getComponentByAuthenticatedStatus(<Setting />, true)}
-						</Route>
-						<Route exact={true} path="/">
-							{user === undefined && <Fragment />}
-							{user === null && <Redirect to="/login" />}
-							{user && <Redirect to="/home" />}
-						</Route>
+						<Route
+							exact={true}
+							path="/login"
+							render={() => getComponentByAuthenticatedStatus(<Login />, false)}
+						/>
+						<Route
+							exact={true}
+							path="/create-account"
+							render={() =>
+								getComponentByAuthenticatedStatus(<CreateAccount />, false)
+							}
+						/>
+						<Route
+							exact={true}
+							path="/forgot-password"
+							render={() =>
+								getComponentByAuthenticatedStatus(<ForgotPassword />, false)
+							}
+						/>
+						<Route
+							exact={true}
+							path="/home"
+							render={() => getComponentByAuthenticatedStatus(<Home />, true)}
+						/>
+						<Route
+							exact={true}
+							path="/list"
+							render={() => getComponentByAuthenticatedStatus(<List />, true)}
+						/>
+						<Route
+							exact={true}
+							path="/setting"
+							render={() =>
+								getComponentByAuthenticatedStatus(<Setting />, true)
+							}
+						/>
+						<Route
+							exact={true}
+							path="/"
+							render={() => {
+								if (user === undefined) {
+									return <Fragment />
+								}
+								if (user === null) {
+									return <Redirect to="/login" />
+								}
+								return <Redirect to="/home" />
+							}}
+						/>
 					</IonRouterOutlet>
 					<IonTabBar slot="bottom" hidden={hiddenTabs}>
 						<IonTabButton tab="qrCode" href="/home">
